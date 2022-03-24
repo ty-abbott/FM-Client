@@ -1,4 +1,4 @@
-package com.example.familymapclient;
+package com.example.familymapclient.support;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +10,7 @@ import java.net.URL;
 
 import requests.LoginRequest;
 import requests.RegisterRequest;
+import responses.FamilyResponse;
 import responses.LoginResponse;
 import responses.RegisterResponse;
 
@@ -56,7 +57,7 @@ public class ServerProxy {
         }
     }
 
-    public RegisterResponse register(RegisterRequest request){
+    public RegisterResponse register(RegisterRequest request) throws IOException{
         try {
             Gson gson = new Gson();
             URL url = new URL("http://" + serverHost + ":" + serverPort + "/user/register");
@@ -87,6 +88,38 @@ public class ServerProxy {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public FamilyResponse getFamily(String authtoken) throws IOException {
+        try {
+            Gson gson = new Gson();
+            URL url = new URL("http://" + serverHost + ":" + serverPort + "/person");
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod("GET");
+            http.setDoOutput(false);
+            http.addRequestProperty("Authorization", authtoken);
+            http.addRequestProperty("Accept", "application/json");
+            http.connect();
+
+            if(http.getResponseCode()==HttpURLConnection.HTTP_OK){
+                InputStream respBody = http.getInputStream();
+                String resData = readString(respBody);
+                FamilyResponse response = gson.fromJson(resData, FamilyResponse.class);
+                return response;
+            }
+            else{
+                System.out.println("ERROR: " + http.getResponseMessage());
+                InputStream respBody = http.getErrorStream();
+                String respData = readString(respBody);
+                System.out.println(respData);
+                return null;
+            }
+
+        }catch(IOException e){
+            e.printStackTrace();
+            return null;
+        }
+
     }
     //login
     //register

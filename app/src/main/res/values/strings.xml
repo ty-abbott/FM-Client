@@ -17,5 +17,6 @@
     <string name="registerButton">REGISTER</string>
     <string name="radioHeader">Gender: </string>
     <string name="toastGreeting">Hello</string>
+    <string name="mapFragmentMessage">This is the map fragment</string>
 
 </resources>
